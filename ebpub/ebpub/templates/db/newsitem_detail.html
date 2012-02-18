@@ -7,24 +7,10 @@
 {% block content %}
 
 <div id="content">
-	<h1>{{ newsitem.title }}{% block extra_title %}{% endblock %}</h1>
+<div class="row">
+	<div class="twelve col" style="border-bottom:1px solid #e0e0e0; margin-bottom:20px;">
+	<h1 style="font-size:28px;">{% if newsitem.schema.is_special_report %}Special report: {% endif %}{{ newsitem.title }}{% block extra_title %}{% endblock %}</h1>
 	{% block newsitem_detail_summary %}{% endblock %}
-
-	<div id="mapwrapper">
-	  <script type="text/javascript">
-	  {% autoescape off %}
-	  
-	  function loadMap() {
-		  var config = {{map_configuration}};
-      config.center = [{{map_center_x}}, {{map_center_y}}];
-      config.zoom = 16;
-      return new OBMap(config);        
-		}
-		
-		{% endautoescape %}
-	  </script>
-	  {% include "richmaps/richmap.html" %}
-	</div>
 
     <!-- block flagging -->{% block flagging %}
 	{% if allow_flagging %}
@@ -53,49 +39,40 @@
 
 	{% endif %}
 	{% endblock flagging %}<!-- endblock flagging -->
-	<table>
-		<tr>
-			<th>Location</th>
-			<td>
-				{% if location_url %}<a href="{{ location_url }}">{% endif %}
-                                {{newsitem.location_name|default:"unknown"}}
-                                {% if location_url %}</a>{% endif %}
-				{% if not newsitem.location %}<p>This location couldn't be mapped.</p>{% endif %}
-			</td>
-		</tr>
-		<!-- block newsitem_detail_date -->{% block newsitem_detail_date %}
-			<tr>
-				<th>{{ newsitem.schema.date_name|capfirst }}</th>
-				<td><a href="{{ newsitem.item_date_url }}">{{ newsitem.item_date|date:"F j, Y" }}</a></td>
-			</tr>
-		{% endblock newsitem_detail_date %}<!-- endblock: newsitem_detail_date -->
-		<!-- block newsitem_detail_description -->{% block newsitem_detail_description %}
-			<tr>
-				<th>Description</th>
-				<td>{{ newsitem.description|truncatewords_html:20}}
-				  {% if newsitem.url %}
-				    <br /><a href="{{newsitem.url}}">Read more at {{newsitem.url}}</a>
-				  {% endif %}
-				</td>
-			</tr>
-		{% endblock newsitem_detail_description %}<!-- endblock: newsitem_detail_description -->
-		<!-- block newsitem_detail_image_list -->{% block newsitem_detail_image_list %}
-			{% for image in images %}
-				<tr>
-					<th>Image {{ forloop.counter }}</th>
-					<td>
-					  <img src="{{ image.url }}" width="640">
-					</td>
-				</tr>
-			{% endfor %}
-		{% endblock %}<!-- endblock: newsitem_detail_image_list -->
-		<!-- block newsitem_detail_attribute_list -->{% block newsitem_detail_attribute_list %}
+	<div class="news_item_meta">
+		<div class="row">
+			<div class="twelve col">
+				{% block newsitem_detail_date %}
+					<!-- {{ newsitem.schema.date_name|capfirst }} -->
+					<a href="{{ newsitem.item_date_url }}">{{ newsitem.item_date|date:"F j, Y" }}</a>
+				{% endblock %}
+				&nbsp;|&nbsp;
+				
+				{% if location_url %}
+				<a href="{{ location_url }}">
+				{% endif %}
+				
+				{{newsitem.location_name|default:"unknown"}}
+				
+				{% if location_url %}
+				</a>
+				
+				{% endif %}
+				
+				{% if not newsitem.location %}
+					This location couldn't be mapped.
+				{% endif %}
+				&nbsp;|&nbsp;
+				
+				{% if newsitem.url %}
+					<a href="{{newsitem.url}}" style="color:#3D799E">Discover more</a>
+				{% endif %}
+			</div>
+		</div>
+		<div class="minor">
+		{% block newsitem_detail_attribute_list %}
 			{% for attribute in attribute_list %}
-				<tr>
-					<th>
-						{{ attribute.sf.smart_pretty_name|capfirst }}
-					</th>
-					<td>
+				{{ attribute.sf.smart_pretty_name|capfirst }}:
 						{% if attribute.value_list %}
 						{% for value in attribute.value_list %}
 							{% if value.url %}
@@ -103,18 +80,41 @@
 							{% else %}
 								{{ value.value }}
 							{% endif %}
-							{% if value.description %}<p>{{ value.description|safe }}</p>{% endif %}
-							{% if not forloop.last %}{% if not value.description %}<br>{% endif %}{% endif %}
+							{% if value.description %}<span>{{ value.description|safe }}</span>{% endif %}&nbsp;|&nbsp;
+							{% if not forloop.last %}{% if not value.description %}{% endif %}{% endif %}
 						{% endfor %}
 						{% else %}
 						None
 						{% endif %}
-					</td>
-				</tr>
 			{% endfor %}
-		{% endblock newsitem_detail_attribute_list %}<!-- endblock: newsitem_detail_image_list -->
-	</table>
+		{% endblock newsitem_detail_attribute_list %}<!-- endblock: newsitem_detail_image_list..........What? -->
+		</div>
+			<div class="eight col" style="margin-left:0px">
+		{% block newsitem_detail_description %}			
+			{% if newsitem.schema.slug == "photos" %}
+				{% for attribute in attribute_list %}
+					{% if attribute.sf.smart_pretty_name|capfirst == "Thumbnail URL" %}
+						{% for value in attribute.value_list %}
+						<a href="{{ newsitem.url }}">
+							<img src="{{ value.value }}" class="flickr_newsitem_thumb">
+						</a>
+						{% endfor %}
+					{% else %}
+					{% endif %}
+				{% endfor %}
+			{{ newsitem.description }}
+			{% else %}
+			<!-- For descriptions with HTML markup, see note in snippets/newsitem_list -->		
+			{{ newsitem.description }}
 
+			{% endif %}
+		{% endblock %}
+			<div class="clear"></div>
+					<span class="st_fblike_hcount" ></span>
+					<span class="st_plusone_hcount"></span>
+					<span class="st_twitter_hcount"></span>
+			<div class="clear"></div>
+			
   {% block extracontent %}
   {% endblock %}
 
@@ -137,7 +137,24 @@
     {% endfor %}
     </div>
 
-
+	{% comment %}
+	<!-- Disqus > Django. Signup and change the shortname, replace content between item_content block with content below -->
+	<div id="disqus_thread"></div>
+		<script type="text/javascript">
+			var disqus_shortname = 'YOUR_SHORTNAME'; // required: replace example with your forum shortname
+    			var disqus_identifier = '{{ newsitem.id }}';
+			var disqus_url = '{% url ebpub-homepage %}{{ newsitem.schema.url }}detail/{{ newsitem.id }}/';
+    		/* * * DON'T EDIT BELOW THIS LINE * * */
+    			(function() {
+        			var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        			dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        			(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    			})();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	{% endcomment %}
+	
+	{% block item_comments %}
     {% if request.user.is_authenticated %}
 	  <h2> Add a Comment </h2>
 	  {% get_comment_form for newsitem as form %}
@@ -166,13 +183,29 @@
     {% endif %}
 	  {% endif %}
 	{% endblock %}
-
+	
+	<div class="four col">
+		<div id="mapwrapper" style="border-bottom:1px solid #e0e0e0; margin-bottom:10px">
+	  <script type="text/javascript">
+	  {% autoescape off %}
+	  
+	  function loadMap() {
+		  var config = {{map_configuration}};
+      config.center = [{{map_center_x}}, {{map_center_y}}];
+      config.zoom = 16;
+      return new OBMap(config);        
+		}
+		
+		{% endautoescape %}
+	  </script>
+	  {% include "richmaps/richmap.html" %}
+	</div>
 
 	<!-- block similaritems -->{% block similaritems %}
 		{% if not newsitem.schema.is_special_report %}
 			{% if locations_within %}
-				<h2>Other {{ newsitem.schema.plural_name }} nearby</h2>
-				<ul>
+				<h2 style="border-top:1px solid #e0e0e0; margin-top:10px">Related</h2>
+				<ul class="location_type_list" style="margin-left:20px">
 					{% for location in locations_within %}
 					<li><a href="{% filter_url newsitem.schema +'location' location %}">{{ location.name }}</a></li>
 					{% endfor %}
@@ -200,6 +233,6 @@
 	  {% endwith %}
 	{% endif %}
 	</ul>
-
+</div>
 </div><!--/ #content-->
 {% endblock %}

@@ -4,9 +4,17 @@
 <html lang="en">
 <head>
 <title>{% block fulltitle %}{% block title %}{% endblock %} | {% block city_title %}OpenBlock{% endblock %}{% endblock fulltitle %}</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="robots" content="noarchive">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="keywords" content="aggregates, news, local, map, hyperlocal, {% METRO NAME %}, feed, discussion, community" /> 
+<meta name="description" content="Rediscover {% METRO NAME %} with hyperlocal news updates" />
+<meta name="robots" content="index">
+
 <link rel="home" title="Home" href="{% url ebpub-homepage %}">
+<link rel="icon" type="image/x-icon" href="{% url ebpub-homepage %}/favicon.ico"> <!-- For older browsers that require explicit call to favicon -->
+<link rel="apple-touch-icon" href="{{ STATIC_URL }}/styles/images/apple.png" /> <!-- Better icon for bookmarking on iOS -->
 
 {% slimall %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}styles/style-reset.css" />
@@ -14,6 +22,14 @@
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}styles/openblock.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}styles/calendrical.css" />
 {% endslimall %}
+
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="/styles/ie.css" />
+<script src="/scripts/css3-mediaqueries.js" type="text/javascript"></script>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/styles/foundation.css" /> <!-- Adds mobile compatability, sweet buttons, misc styles. http://foundation.zurb.com -->
+<link rel="stylesheet" href="{{ STATIC_URL }}/styles/slimbox2.css" type="text/css" media="screen" />
 
 <script src="{{ JQUERY_URL }}" type="text/javascript" charset="utf-8"></script>
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL}}styles/smoothness/jquery-ui-1.8.17.custom.css" />
@@ -30,21 +46,23 @@ var $j = $;
 <script src="{{ STATIC_URL}}scripts/jquery.calendrical.js"></script>
 <script src="{{ STATIC_URL}}scripts/json2.js"></script>
 {% endslimall %}
-
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/styles/style.css" />
 <script src="{{ STATIC_URL }}scripts/jquery-ui-1.8.17.custom.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/scripts/prefixfree.min.js" type="text/javascript"></script> <!-- Adds browser-specifc prefixes to stylesheets (-moz, -webkit, etc.), can remove for production, but save modified CSS file. http://leaverou.github.com/prefixfree/ -->
+
 <!-- begin block extrahead -->
 {% block extrahead %}{% endblock %}
 <!-- end block extrahead -->
 </head>
 <body {% if bodyid %}id="{{bodyid}}"{% endif %} {% if bodyclass %}class="{{bodyclass}}"{% endif %}>
   <div id="container">
-	<div id="header">
-		<h1><a href="{% url ebpub-homepage %}">OpenBlock: {% METRO_NAME %}</a></h1>
-		<div id="globalnav">
-			{% block userlinks %}
-			{% include "db/snippets/userlinks.html" %}
-			{% endblock userlinks %}
-			{% set_search_placeholder "Search for" as placeholder %}
+	<div id="header" style="background:#1D243B;">
+	<div class="row">
+		<div class="three col">
+			<a href="{% url ebpub-homepage %}"><img src="{{ STATIC_URL }}/images/logo.png" style="margin-bottom:-3px"/></a>
+		</div>
+		<div class="nine col">
+		{% set_search_placeholder "Search for" as placeholder %}
 			<form action="{% url ebpub-search %}" id="globalsearch" onsubmit="if ($j('#searchinput').val() == '{{ placeholder }}') return false; return true;">
 				<p>
 					<label for="searchinput">{{ placeholder}}</label>
@@ -52,29 +70,98 @@ var $j = $;
 					<button type="submit">Go</button>
 				</p>
 			</form>
-		</div><!--/ #globalnav -->
-		<!-- begin block breadcrumbs -->
-		{% block breadcrumbs %}
-		{% include "db/snippets/breadcrumbs.html" %}
-		{% endblock breadcrumbs %}
-		<!-- end block breadcrumbs -->
+		<div class="globalnav">
+			<ul class="hide-on-phones nav-bar" style="float:right">
+				<li class="has-flyout" style="margin-right:-22px;">
+					<a href="/news/" class="main">Find &raquo;</a>
+						<a href="#" class="flyout-toggle">
+							<span></span>
+						</a>
+					<div class="flyout" id="flyout">
+						<ul id="superfly">
+							<li><!-- Your Schemas Here <a href="/local-news/">&rsaquo; Local News --></li>
+						</ul>
+					</div>
+				</li>
+				<li class="has-flyout" style="margin-right:-22px;">
+					<a href="/locations/" class="main">Locations &raquo;</a>
+						<a href="#" class="flyout-toggle">
+							<span></span>
+						</a>
+					<div class="flyout" id="flyout">
+						<ul id="superfly">
+							<li><!-- Your Location Types here <a href="/locations/neighborhoods/">&rsaquo; Neighborhoods</a> --></li>
+						</ul>
+					</div>
+				</li>
+				<li><a href="/maps/">Map</a></li>
+				{% block userlinks %}
+					{% if USER_EMAIL %}
+						<li class="login">
+							<form action="{% url ebpub.accounts.views.logout %}" method="POST">
+							{% csrf_token %}
+							<a href="{% url ebpub.accounts.views.dashboard %}">Profile</a></form></li>
+					{% else %}
+						<li class="register hide-on-tablets"><a href="{% url ebpub.accounts.views.login %}" rel="nofollow">Sign in</a></li>
+						<li><a href="{% url ebpub.accounts.views.register %}" rel="nofollow">Register</a>.</li>
+					{% endif %}
+				{% endblock userlinks %}
+			</ul>
+		</div>
+		</div>
 	</div><!-- / #header -->
 	<div id="main">
+		<!-- begin block breadcrumbs -->
+			{% block breadcrumbs %}
+				<div class="row">
+					<div class="twelve col">
+						{% include "db/snippets/breadcrumbs.html" %}
+					</div>
+				</div>
+			{% endblock breadcrumbs %}
+		<!-- end block breadcrumbs -->
 	  <!-- begin block messages -->
-		{% block messages %}
+	{% block messages %}
 	    {% if messages %}
-	    <ul class="messages">
+	    	<ul class="messages">
 		  {% for message in messages %}
-		  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+		  	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 		  {% endfor %}
 		</ul>
-		{% endif %}
-		{% endblock messages %}
+	    {% endif %}
+	{% endblock messages %}
         <!-- end block messages -->
 		<!-- begin block content -->
 		{% block content %}{% endblock content %}
 		<!-- end block content -->
 	</div><!-- / #main -->
   </div><!-- / #container -->
+	<div class="container">
+	<div class="row">
+		<div class="twelve col">
+			<dl class="nice tabs mobile show-on-phones">
+				<dd><a href="/news/">Find</a></dd>
+				<dd><a href="/locations/">Locations</a></dd>
+				<dd><a href="/maps/">Maps</a></dd>
+				<dd>{% if USER_EMAIL %}<form action="{% url ebpub.accounts.views.logout %}" method="POST">{% csrf_token %}<a href="{% url ebpub.accounts.views.dashboard %}">Welcome, {{ USER_EMAIL }}</a>.</dd>
+				<dd><button type="submit" class="logout">Log out</button></dd>
+				<dd>{% else %}<a href="{% url ebpub.accounts.views.login %}" rel="nofollow">Sign in</a></dd>
+				<dd><a href="{% url ebpub.accounts.views.register %}" rel="nofollow">Register</a>.{% endif %}</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row" style="padding-bottom:20px;">
+		<div class="five col hide-on-phones"> <!-- QR code for each page, in a lightbox -->
+			<a href="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={% url ebpub-homepage %}{{ request.path }}" rel="lightbox"><img src="https://chart.googleapis.com/chart?chs=75x75&cht=qr&chl=http://larryvilleku.com{{ request.path }}" style="width:25px;height:25px;" /><span class="qr_code">QR Code</span></a>
+		</div>
+		<div class="seven col">
+			&nbsp;<!-- Copy right info can go here, e.g. &copy; Copyright 2012 <a href="{%url ebpub-homepage %}">{% METRO NAME %}</a> -->
+		</div>
+	</div>
+  </div><!-- / end footer container -->
+  </div><!-- / end full page container -->
+ <script type="text/javascript" src="/scripts/slimbox2.js"></script> <!-- Lightbox -->
+<script type="text/javascript">var switchTo5x=true;</script><script src="http://w.sharethis.com/button/buttons.js" type="text/javascript"></script>
+<!-- SHARE THIS pub ID/analytics here if desired -->
 </body>
 </html>

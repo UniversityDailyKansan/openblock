@@ -11,9 +11,57 @@
 				<p class="form"><input id="homepage-searchinput" type="text" name="q" value="{{ placeholder }}" onfocus="if (this.value == '{{ placeholder }}') { this.value = ''; }" onblur="if (this.value == '') { this.value = '{{ placeholder }}'; }" /> <input type="submit" value="Search" /></p>
 			</form>
 		</div><!--/ #homepage-search -->
-
+<!-- Describes what it's all about......this doesn't have to be pushed to master, just thought it may be helpful. -->
+<div style="text-align:center" class="show-on-phones">
+<a href="/maps/"><h1 class="green">Looks like you're mobile</h1>
+<h2 class="gray" style="margin-top:-10px">Go to our optimized map</h2></a>
+</div>
+<div class="row" style="margin-bottom:20px; margin-top:-10px;">
+	<div class="three col">
+		<div class="featured_item">
+			<a href="/accounts/dashboard/"><div class="icons" id="start"></div>
+			<div class="homepage_featured_title gray">start</div></a>
+			<div class="featured_desc">
+				{% if USER_EMAIL %}
+					Customize your news with your own account. Go to <a href="/accounts/dashboard/">your profile</a>, submit a <a href="/neighbornews/message/new/">news posting</a>, or learn about everything you can do.
+				{% else %}
+					Customize your news with your own account by saving places, posting news and subscribing to alerts. <a href="/accounts/register/">Sign up</a> and discover what you're capable of.
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="three col">
+		<div class="featured_item">
+			<a href="/news/"><div class="icons" id="find"></div>
+			<div class="homepage_featured_title red">find</div></a>
+			<div class="featured_desc">
+				Type in your address and watch your block become populated with everything from bargains to police citations.
+			</div>
+		</div>
+	</div>
+	<div class="three col">
+		<div class="featured_item">
+			<a href="/neighbornews/message/new/"><div class="icons" id="share"></div>
+			<div class="homepage_featured_title blue">share</div></a>
+			<div class="featured_desc">
+				Report your own news and share with the community. Lost your cat? Enjoy a new restaurant? Don't keep it to yourself.
+			</div>
+		</div>
+	</div>
+	<div class="three col">
+		<div class="featured_item">
+			<a href="https://chart.googleapis.com/chart?chs=400x400&amp;cht=qr&amp;chl=http://larryvilleku.com/" rel="lightbox"><div class="icons" id="go"></div>
+				<div class="homepage_featured_title green" >go</div>
+			</a>
+			<div class="featured_desc">
+				{% METRO NAME %}, at your fingertips. Everything on this website is mobile compatible, so click the QR code at the lower left of every page and scan away.
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="eight col">
 		<div id="nav-location">
-
 		<div id="mapwrapper">
 		  <script type="text/javascript">
 		  {% autoescape off %}
@@ -22,13 +70,26 @@
   		  var config = {{map_configuration}};
         config.center = [{{default_lon}}, {{default_lat}}];
         config.zoom = {{default_zoom}};
-        return new OBMap(config);        
+
+        var map = new OBMap(config);
+		
+		return map;
   		}
   		
   		{% endautoescape %}
 		  </script>
 		{% include "richmaps/richmap.html" %}
 		</div><!-- end mapwrapper -->
+		</div>
+	</div>
+	<div class="four col">
+		<h2 style="font-size:32px; line-height:inherit; margin-bottom:20px;">Recently in <span class="red">Your</span> City</h2>
+			<ul class="homepage_recently">
+				{% for chart in non_empty_date_charts %}
+					<li><span>{{ chart.total_count|intcomma }}</span> {% map_icon_img chart.schema %} <a href="{{ chart.schema.url }}">{% filter capfirst %}{% schema_plural_name chart.schema chart.total_count %}{% endfilter %}</a></li>
+				{% endfor %}
+			</ul>
+	</div>
 
 		<div id="intro-explore">
 			<h2>Locations</h2>
@@ -65,14 +126,23 @@
 		{% endif %}
 	</div><!--/ #public-records -->
 	<div id="more">
-	{% if more_schemas %}
-		<h2>More news</h2>
-		<ul>
-		{% for schema in more_schemas %}
-			<li><a href="{{ schema.url }}">{% map_icon_img schema %}{{ schema.plural_name|capfirst }}</a></li>
-		{% endfor %}
+<div class="row">
+	<!-- {% if non_empty_date_charts %} {% else %} {% endif %} -->
+	<div class="twelve col">
+		<ul class="location_type_list">
+		{% if empty_date_charts %}
+			{% for chart in empty_date_charts %}
+				<li><a href="{{ chart.schema.url }}">{% map_icon_img chart.schema %}<span>{{ chart.schema.plural_name|capfirst }}</span></a></li>
+			{% 	endfor %}
+		{% endif %}
+		{% if more_schemas %}
+			{% for schema in more_schemas %}
+				<li><a href="{{ schema.url }}">{% map_icon_img schema %}<span>{{ schema.plural_name|capfirst }}</span></a></li>
+			{% endfor %}
+		{% endif %}
 		</ul>
-	{% endif %}
+	</div>
+</div>
 
 	<!-- begin block restrictedschemas -->
 	{% block restrictedschemas %}
@@ -101,7 +171,15 @@
 	{% endblock featuredlookups %}<!--  end block featuredlookups -->
 
     </div><!-- / #frontpage-text -->
-
+<div class="row" style="margin-top:40px">
+	<div class="five col offset-by-seven">
+		<span class="social_footer">
+			<span class="st_fblike_hcount" st_url="{% url ebpub-homepage %}" ></span>
+			<span class="st_plusone_hcount" st_url="{% url ebpub-homepage %}"></span>
+			<span class="st_twitter_hcount" st_url="{% url ebpub-homepage %}"></span>
+		</span>
+	</div>
+</div>
 </div><!--/ #content -->
 
 <div id="sidebar">

@@ -1,13 +1,22 @@
-{% if is_grouped %}
+{% comment $}{% if is_grouped %}
 	<li id="newsitem-{{ newsitem.id }}" class="newsitem photogroup">
 		{% for newsitem in newsitem_list %}<a class="photo" href="{{ newsitem.item_url }}" rel="nofollow"><img width="75" height="75" class="thumbnail" src="{{ newsitem.attributes.photo_href }}" alt="{{ newsitem.title }} posted by {{ newsitem.attributes.username }} to {{ newsitem.attributes.sourcename }}" title="{{ newsitem.title }} posted by {{ newsitem.attributes.username }} to {{ newsitem.attributes.sourcename }}"></a>{% endfor %}
 	</li>
-{% else %}
+{% else %}{% endcomment %} <!-- Frustrated by lack of photo display consistency between filter/schema page and location/place pages, but I didn't want to delete the grouping style, so it's in Django comment blocks. If grouped style uncommented, also delete comment blocks around endif at the bottom -->
 	{% for newsitem in newsitem_list %}
 		<li id="newsitem-{{ newsitem.id }}" class="newsitem">
+			<div class="photo_date">
+				<img src="{{ newsitem.schema.map_icon_url }}" />
+				<span class="month">{{ newsitem.item_date|date:"M" }}</span>
+				<span class="day">{{ newsitem.item_date|date:"d" }}</span>
+			</div>
 			<a class="photo" href="{{ newsitem.item_url }}" rel="nofollow"><img width="75" height="75" class="thumbnail" src="{{ newsitem.attributes.photo_href }}" alt=""></a>
-			<span class="location">{{ newsitem.location_name }}</span>
-			<strong class="title"><a href="{{ newsitem.item_url }}" class="url" rel="nofollow">{{ newsitem.title }}</a></strong>
+			<span class="title">
+				<a href="{{ newsitem.item_url}}" class="url" rel="nofollow">{{ newsitem.title|truncatewords_html:20|default:"Untitled"  }}</a>
+			</span>
+			<span class="location">
+				{% if location_url %}<a href="{{ newsitem.location_url }}">{% endif %}@{{ newsitem.location_name }}{% if location_url %}</a>{% endif %}
+			</span>
 			<p class="info">Posted to {{ newsitem.attributes.sourcename }} by
 				<strong class="username">
 				{% ifequal newsitem.attributes.sourcename "Panoramio" %}
@@ -17,7 +26,7 @@
 					<a href="http://www.flickr.com/photos/{{ newsitem.attributes.user_id }}/" rel="nofollow">
 				{% endifequal %}
 				{{ newsitem.attributes.username }}</a></strong>
-				on <strong class="dateposted">{{ newsitem.item_date|date:"F j, Y" }}</strong>.</p>
+			</p>
 		</li>
 	{% endfor %}
-{% endif %}
+{% comment %}{% endif %}{% endcomment %}

@@ -110,13 +110,11 @@ window.onload = function() {
 {% endblock header %}
 
 {% block place_content %}
-<div id="content">
-
   {% ifnotequal place.slug "unknown" %}
-	<div id="contentheader">
+	<div id="contentheader" class="six col">
 	  <h1>{{ place.pretty_name }}</h1>
 
-	  <ul class="nav-view">
+	  <ul class="nav-view" style="float:left">
 		{% if show_upcoming %}
 		  <li><a href="../" rel="nofollow">Recent News</a></li>
 		  <li class="selected">Upcoming Events</li>
@@ -128,14 +126,19 @@ window.onload = function() {
 		{% endif %}
 	  </ul>
 	  {% if is_block %}
-	  <p>Show news within:</p>
-	  <ul>
-		<li>{% ifequal block_radius "1" %}1 block{% else %}<a href="?radius=1" rel="nofollow">1 block</a>{% endifequal %}</li>
-		<li>{% ifequal block_radius "3" %}3 blocks{% else %}<a href="?radius=3" rel="nofollow">3 blocks</a>{% endifequal %}</li>
-		<li>{% ifequal block_radius "8" %}8 blocks{% else %}<a href="?radius=8" rel="nofollow">8 blocks</a>{% endifequal %}</li>
-	  </ul>
+		<div class="block_sizes">
+			<div class='{% ifequal block_radius "1" %}one_block active'><span class="text"><span>1</span> block</span>{% else %}one_block inactive'><a href="?radius=1" rel="nofollow"><span class="text"><span>1</span> block</span></a>{% endifequal %}</div>
+			<div class='{% ifequal block_radius "3" %}three_block active'><span class="text"><span>3</span> blocks</span>{% else %}three_block inactive'><a href="?radius=3" rel="nofollow"><span class="text"><span>3</span> blocks</span></a>{% endifequal %}</div>
+			<div class='{% ifequal block_radius "8" %}eight_block active'><span class="text"><span>8</span> blocks</span>{% else %}eight_block inactive'><a href="?radius=8" rel="nofollow"><span class="text"><span>8</span> blocks</span></a>{% endifequal %}</div>
+		</div>
 	  {% endif %}
-	  <form class="select-filter" method="GET">
+	  	{% ifnotequal place.slug "unknown" %}
+	  <ul class="nav-view" style="margin-left:3px">
+		{% if alerts_installed %}<li><a class="email" href="{{ place.alert_url }}">E-mail Alerts</a></li>{% endif %}
+		<li><a class="feed" href="{{ place.url }}feeds/">RSS Alerts</a></li>
+	  </ul>
+		{% endifnotequal %}
+	  <form class="select-filter" method="GET" style="margin-bottom:60px">
 		<select id="sectionfilter" class="chzn-select"
 			style="width: 260px;"
 			data-placeholder="Choose a type of information&hellip;">
@@ -154,15 +157,6 @@ window.onload = function() {
 
   <div id="place-detail-content">
 	{% include "db/snippets/newsitem_list_by_day.html" %}
-	{% ifnotequal place.slug "unknown" %}
-	<div id="alerts-signup">	
-		<h2>Sign up for:</h2>
-		<ul>
-			{% if alerts_installed %}<li><a class="email" href="{{ place.alert_url }}">E-mail alerts</a></li>{% endif %}
-			<li><a class="feed" href="{{ place.url }}feeds/">Custom RSS feeds</a></li>
-		</ul>
-	</div>
-	{% endifnotequal %}
   </div><!--/ #place-detail-content -->
 
   <!-- begin block extracontent -->

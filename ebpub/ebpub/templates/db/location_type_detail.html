@@ -16,9 +16,9 @@
 {% block content %}
 <div id="content">
 	<h1>{% METRO_NAME %} {{ location_type.plural_name }}</h1>
-	<ul>
+	<ul class="nav-view">
 		{% for type in location_type_list %}
-			<li>{% if type.is_current %}<strong class="current">{{ type.location_type.plural_name|capfirst }}</strong>{% else %}<a href="{{ type.location_type.url }}">{{ type.location_type.plural_name|capfirst }}</a>{% endif %}</li>
+			<li {% if type.is_current %} class="selected"{% else %}{% endif %}>{{ type.location_type.plural_name|capfirst }}<a href="{{ type.location_type.url }}">{{ type.location_type.plural_name|capfirst }}</a></li>
 		{% endfor %}
 	</ul>
 	<p>Choose a {{ location_type.name }} to see recent news in that area. You can also <a href="{% url ebpub-street-list '' %}">browse by street</a> to find an individual block.</p>
@@ -32,7 +32,7 @@
 		{% regroup location_list by city as city_list %}
 		{% for city in city_list %}
 			{% if city_list|length|greaterthan:"1" %}<h2>{{ city.grouper.title }}</h2>{% endif %}
-			<ul>
+			<ul class="location_type_list">
 				{% for location in city.list %}
 				<li><a href="{{ location.slug }}/">{{ location.name }}</a></li>
 				{% endfor %}

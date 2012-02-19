@@ -74,34 +74,36 @@ $j(document).ready(function() {
 {% block subscribe_links %}{% endblock subscribe_links %}
 
 {% block place_content %}
-	<div id="content">
-
-	  <div id="contentheader">
+	  <div id="contentheader" class="twelve col">
 		<h1>{{ place.pretty_name }}</h1>
-
+		{% if is_block %}
+		<div class="row">
+		<ul class="nav-view four col">
+		{% else %}
 		<ul class="nav-view">
+		{% endif %}
 		  <li><a href="../">Recent News</a></li>
 		  <li><a href="../upcoming/">Upcoming Events</a></li>
 		  <li class="selected">Overview</li>
 		</ul>
 	{% if is_block %}
-	<p>Show news within:</p>
-	<ul>
-		<li>{% ifequal block_radius "1" %}1 block{% else %}<a href="?radius=1" rel="nofollow">1 block</a>{% endifequal %}</li>
-		<li>{% ifequal block_radius "3" %}3 blocks{% else %}<a href="?radius=3" rel="nofollow">3 blocks</a>{% endifequal %}</li>
-		<li>{% ifequal block_radius "8" %}8 blocks{% else %}<a href="?radius=8" rel="nofollow">8 blocks</a>{% endifequal %}</li>
-	</ul>
+		<div class="block_sizes eight col">
+			<div class='{% ifequal block_radius "1" %}one_block active'><span class="text"><span>1</span> block</span>{% else %}one_block inactive'><a href="?radius=1" rel="nofollow"><span class="text"><span>1</span> block</span></a>{% endifequal %}</div>
+			<div class='{% ifequal block_radius "3" %}three_block active'><span class="text"><span>3</span> blocks</span>{% else %}three_block inactive'><a href="?radius=3" rel="nofollow"><span class="text"><span>3</span> blocks</span></a>{% endifequal %}</div>
+			<div class='{% ifequal block_radius "8" %}eight_block active'><span class="text"><span>8</span> blocks</span>{% else %}eight_block inactive'><a href="?radius=8" rel="nofollow"><span class="text"><span>8</span> blocks</span></a>{% endifequal %}</div>
+		</div>
+		</div>
 	{% endif %}
-
+	</div>
 	</div><!-- end #contentheader -->
+	<div id="content" class="row">
+		<div class="eight col">
 		{% for schema in schema_groups %}
 			{% if schema.latest_newsitems %}
-				<div class="module {% if forloop.counter0|divisibleby:"2" %}odd{% endif %}"
-					 id="module-{{ schema.schema.id }}">
-					<h2>{% map_icon_img schema.schema %} {{ schema.schema.plural_name|capfirst }}</h2>
-					{% if schema.schema.allow_charting %}
-						<ul class="tabs">
-							<li class="current"><a href="#" class="linklist">
+			<a href="{% url ebpub-homepage %}{{ schema.schema.slug }}"><h2>{% map_icon_img schema.schema %} {{ schema.schema.plural_name|capfirst }}</h2></a>
+				{% if schema.schema.allow_charting %}
+						<ul class="nav-view">
+							<li class="selected"><a href="#" class="linklist">
 								{% if schema.schema.is_event %}Upcoming{% else %}Recent items{% endif %}</a></li>
 							<li><a href="#" class="linkdatechart">By {{ schema.schema.date_name }}</a></li>
 							{% for lookup in schema.lookup_charts %}
@@ -127,6 +129,7 @@ $j(document).ready(function() {
 			</div><!-- end #module-{{ schema.schema.id }} -->
 			{% endif %}
 		{% endfor %}
+	<div class="four col">
 	  <div id="alerts-signup">
 		<h2>Sign up for:</h2>
 		<ul>

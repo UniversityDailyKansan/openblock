@@ -5,7 +5,7 @@
 {% block header %}E-mail alerts for {{ place.pretty_name }}{% endblock %}
 
 {% block place_content %}
-<div id="content">
+<div class="six col">
 	<p>Get notified when new information around <a href="../">{{ place.pretty_name }}</a> is posted.</p>
 	{% if form.errors %}<p class="error">There was an error with your submission. Please check for errors in the form below.</p>{% endif %}
 	<h2>Subscribe to e-mail alerts</h2>

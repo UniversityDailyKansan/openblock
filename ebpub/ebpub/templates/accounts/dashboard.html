@@ -61,55 +61,28 @@ $j(function() {
 
 {% block content %}
 <div id="content">
-  <h1>Your account</h1>
-
-	<p>Logged in as <strong>{{ user.email }}</strong>.
-	<form action="{% url accounts-pw-change %}">
-		<p><button type="submit">Change Password</button></p>
-	</form>
-	<form action="{% url accounts-logout %}" method="post">
-		<p><button type="submit">Log out</button></p>
-		{% csrf_token %}
-	</form>
-	<p>You've had an account since {{ user.date_joined|date:"F j, Y" }}.</p>
+<div class="row">
+	<div class="eight col">
+		<div class="row">
+			<div class="eight col">
+				<h1>You. &mdash; {{ user.email }}</h1>
+			</div>
+			{% if is_neighbornews_enabled %}
+			<div class="four col">
+				<a href="{% url new_message %}" class="red nice button round" id="add_button" style="float:right; color:#ffffff">Post News</a></h2>
+			</div>
+			{% else %}
+			<div class="three col"> &nbsp; </div>
+			{% endif %}
+		</div>
 
 	{% if custom_message %}
 		<p>{{ custom_message }}</p>
 	{% endif %}
-
-	<div id="display-preferences">
-		<h2>Your timeline display preferences</h2>
-		<p>Choose categories of news for the timeline.</p>
-		<ul>
-		{% for schema in schema_list %}
-			<li><button class="display-toggle" id="toggle-{{ schema.schema.slug }}">{% if schema.is_hidden %}Show{% else %}Hide{% endif %}</button> <a href="{{ schema.schema.url }}">{{ schema.schema.plural_name|capfirst }}</a></li>
-		{% endfor %}
-		</ul>
-	</div><!--/ #display-preferences -->
-
-	<div id="email-alerts">
-		<h2>Your e-mail alerts</h2>
-		{% if alert_list %}
-			<ul>
-			{% for alert in alert_list %}
-				<li><strong>{{ alert.name }}</strong> ({{ alert.pretty_frequency }}) <a href="{{ alert.unsubscribe_url }}">Unsubscribe</a></li>
-			{% endfor %}
-			</ul>
-		{% else %}
-			<h3>You haven't subscribed to any e-mail alerts yet.</h3>
-			{% set_search_placeholder "Search for an" as placeholder %}
-			<p>{{ placeholder }} in {% METRO_NAME %} to subscribe to alerts for news nearby.</p>
-			<form action="{% url ebpub-search %}" method="GET" onsubmit="if ($j('#alerts-searchinput').val() == '{{ placeholder }}') return false; return true;">
-				<input type="hidden" name="type" value="alert">
-				<p><input type="text" id="alerts-searchinput" name="q" value="{{ placeholder }}" onfocus="if (this.value == '{{ placeholder }}') { this.value = ''; }" onblur="if (this.value == '') { this.value = '{{ placeholder }}'; }"> <input type="submit" value="Search"></p>
-			</form>
-		{% endif %}
-	</div><!--/ #email-alerts -->
-		
 	<div id="saved-places">
 		<h2>Your saved places</h2>
 		{% if saved_place_list %}
-			<ul>
+			<ul class="location_type_list">
 				{% for saved_place in saved_place_list %}
 					<li id="savedplace{{ forloop.counter }}">
 						<a href="{{ saved_place.place.url }}">{{ saved_place.place.pretty_name }}</a>
@@ -125,21 +98,64 @@ $j(function() {
 			{% set_search_placeholder "Search for an" as placeholder %}
 			<p>{{ placeholder }} in {% METRO_NAME %} and click "Save this place" on the resulting page.</p>
 			{% set_search_placeholder "" as placeholder %}
-			<form action="{% url ebpub-search %}" method="GET" onsubmit="if ($j('#locations-searchinput').val() == '{{ placeholder }}') return false; return true;">
-				<p><input id="locations-searchinput" type="text" name="q" value="{{ placeholder }}" onfocus="if (this.value == '{{ placeholder }}') { this.value = ''; }" onblur="if (this.value == '') { this.value = '{{ placeholder }}'; }"> <input type="submit" value="Search"></p>
+			<form action="/search/" method="get" onsubmit="if ($j('#locations-searchinput').val() == '{{ placeholder }}') return false; return true;">
+				<p><input id="locations-searchinput" type="text" name="q" value="{{ placeholder }}" onfocus="if (this.value == '{{ placeholder }}') { this.value = ''; }" onblur="if (this.value == '') { this.value = '{{ placeholder }}'; }">  <button type="submit">Search</button></p>
 			</form>
 		{% endif %}
 	</div><!--/ #saved-places -->
-
+	<div id="display-preferences">
+		<h2>Your display preferences</h2>
+		<p>Choose categories of news that appears across LarryvilleKU.</p>
+		<ul class="location_type_list">
+		{% for schema in schema_list %}
+			<li><button class="display-toggle {% if schema.is_hidden %}hidden{% else %}shown{% endif %}" id="toggle-{{ schema.schema.slug }}">{% if schema.is_hidden %}Show{% else %}Hide{% endif %}</button> <a href="{{ schema.schema.url }}">{{ schema.schema.plural_name|capfirst }}</a></li>
+		{% endfor %}
+		</ul>
+	</div><!--/ #display-preferences -->
+	</div>
+	<div class="four col">
+	<div id="your-postings">
+		<a href="{% url neighbornews_by_user user.id %}"><h2>Your posted items</h2></a>
+	</div>
+	<div id="email-alerts">
+		<h2>Your e-mail alerts</h2>
+		{% if alert_list %}
+			<ul class="location_type_list" style="margin-left:20px;">
+			{% for alert in alert_list %}
+				<li>{{ alert.name }} ({{ alert.pretty_frequency }}) <a href="{{ alert.unsubscribe_url }}"><button>Unsubscribe</button></a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<h3>You haven't subscribed to any e-mail alerts yet.</h3>
+			{% set_search_placeholder "Search for an" as placeholder %}
+			<p>{{ placeholder }} in {% METRO_NAME %} to subscribe to alerts for news nearby.</p>
+			<form action="/search/" method="get" onsubmit="if ($j('#alerts-searchinput').val() == '{{ placeholder }}') return false; return true;">
+				<input type="hidden" name="type" value="alert">
+				<p><input type="text" id="alerts-searchinput" name="q" value="{{ placeholder }}" onfocus="if (this.value == '{{ placeholder }}') { this.value = ''; }" onblur="if (this.value == '') { this.value = '{{ placeholder }}'; }"> <button type="submit">Search</button></p>
+			</form>
+		{% endif %}
+	</div><!--/ #email-alerts -->
+	<div id="account_info">
+		<h2>Your Account</h2>
+		<div class="row">
+		<div class="six col">
+		<form action="{% url accounts-pw-change %}">
+			<button type="submit">Change Password</button>
+		</form>
+		</div>
+		<div class="six col">
+		<form action="{% url accounts-logout %}" method="post">
+			<button type="submit">Log out</button>
+		{% csrf_token %}
+		</form>
+		</div>
+		</div>
+	<p>You've had an account since {{ user.date_joined|date:"M. j, Y" }}.</p>
+	</div>
 	<div id="apikeys">
 		<h2><a href="{% url api_list_keys %}">Your API Keys</a></h2>
-	</div><!--/ #apikeys -->
+	</div>
 
-	{% if is_neighbornews_enabled %}
-	<div id="neighbornews">
-		<h2><a href="{% url neighbornews_by_user user.id %}">Items You Posted</a></h2>
-	</div><!--/ #apikeys -->
-	{% endif %}
-
+	</div>
 </div>
 {% endblock %}

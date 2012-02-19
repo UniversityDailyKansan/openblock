@@ -14,24 +14,25 @@
 {% endblock %}
 
 {% block content %}
-	<div id="content">
+	<div id="content" class="row">
+		<div class="eight col">
 		<h1>{% map_icon_img schema %} {{ schema.plural_name|capfirst }}</h1>
-		<p>{{ schema.short_description }}</p>
-		<!-- block extradescription -->
+<div class="for_title">{{ schema.short_description }} <!-- ShareThis buttons.... <span class="social_footer" style="float:right"><span class="st_fblike_hcount"></span><span class="st_plusone_hcount"></span><span class="st_twitter_hcount"></span></span> --></div>		<!-- block extradescription -->
 		{% block extradescription %}{%endblock%}
 		<!-- end block extradescription -->
 		<h2>About this section</h2>
-		<dl>
-			<dt>Source</dt>
-			<dd>{{ schema.short_source|default:"–" }}</dd>
-			<dt>Updated</dt>
-			<dd>{{ schema.update_frequency|default:"–" }}</dd>
-		</dl>
-		{% if schema.allow_charting %}
-			{% with "filter/" as search_url %}
-			{% include "db/snippets/filter_left_nav.html" %}
-			{% endwith %}
-		{% endif %}
+		{{ schema.summary|default:"–"|safe }}
+		<div class="about_schema_meta">
+		From <span class="special"> {{ schema.source|default:"–"|safe }} </span>
+		&nbsp;|&nbsp; 
+		Updated <span class="special">
+			{% if schema.slug == "tweets" %}
+				Every 5 minutes
+			{% else %}
+		{{ schema.update_frequency|default:"–"|safe }}
+			{% endif %}
+		</span>
+		</div>
 		{% if schema.allow_charting %}
 			{% if date_chart %}
 				<div id="date-chart">
@@ -46,8 +47,8 @@
 			{% endif %}
 			{% for location_chart in location_chartfield_list %}
 				<div id="location-{{ location_chart.location_type.slug }}">
-					<h2>By {{ location_chart.location_type.name }}</h2>
-					<table>
+					<h2 style="color:#DE6666">By {{ location_chart.location_type.name }}</h2>
+					<table class="schema_detail_location_table">
 						{% for location in location_chart.locations %}
 							<tr>
 								<td class="label">
@@ -131,6 +132,12 @@
 					</ul>
 				</div><!--/ #latest-items -->
 			{% endif %}
+		{% endif %}
+	</div>
+		{% if schema.allow_charting %}
+			{% with "filter/" as search_url %}
+			{% include "db/snippets/filter_left_nav.html" %}
+			{% endwith %}
 		{% endif %}
 	</div><!--/ #content -->
 {% endblock %}

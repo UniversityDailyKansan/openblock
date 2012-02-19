@@ -11,7 +11,13 @@ Required variables: nearby_locations, place, is_block
 
 <!-- begin block content -->
 {% block content %}
-<div id="nav-location">
+<div id="content" class="row">
+
+<!-- begin block place_content -->
+{% block place_content %}{% endblock %}
+<!-- end block place_content -->
+
+<div id="nav-location" class="six col">
 	<!-- begin block map -->
 	{% block map %}
 	<div id="mapwrapper">
@@ -31,11 +37,13 @@ Required variables: nearby_locations, place, is_block
 
     <!-- block subscribe_links -->
     {% block subscribe_links %}
-	<div class="subscribe-links">
-		<p>Stay up to date:
-		  <a href="{{ place.url }}feeds/">Custom RSS feeds</a>
+    <div class="row">
+	<div class="six col subscribe-links">
+		<a href="{{ place.url }}feeds/">Custom RSS feeds</a>
+	</div>
+	<div class="six col subscribe-links">
 		  {% if alerts_installed %}<a href="{{ place.alert_url }}">E-mail alerts</a>{% endif %}
-		</p>
+		</div>
 	</div>
     {% endblock subscribe_links %}
     <!-- end block subscribe_links -->
@@ -56,7 +64,5 @@ Required variables: nearby_locations, place, is_block
     <!-- endblock nearby_locations -->
 
 </div><!--/ #nav-location -->
-<!-- begin block place_content -->
-{% block place_content %}{% endblock %}
-<!-- end block place_content -->
+</div>
 {% endblock content %}

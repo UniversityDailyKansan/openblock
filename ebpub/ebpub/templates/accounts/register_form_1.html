@@ -3,26 +3,31 @@
 {% block title %}Create an account{% endblock %}
 
 {% block content %}
+<style type="text/css">
+input { width: 70% }
+</style>
+
 <div id="content">
+	<div class="row">
+		<div class="six col">
 	<h1>Create an account</h1>
 	<h2>Step 1: Verify your e-mail address</h2>
 	<h3>Enter your e-mail address below to create an account.</h3>
 	<form action="" method="POST">
 		{% csrf_token %}
 		{{ form.email.errors }}
-		<table>
-			<tr>
-				<th><label for="id_email">Your e-mail address:</label></th>
-				<td>{{ form.email }}</td>
-			</tr>
-			<tr>
-				<th>&nbsp;</th>
-				<td>
-					<p><button type="submit">Submit e-mail address</button></p>
-				</td>
-			</tr>
-		</table>
+		{{ form.email }}
+		<button type="submit">Go</button>
 	</form>
-	<p>Already have an account? <a href="../login/">Log in here...</a></p>
+	<p>Already have an account? <a href="../login/"><button>Log in here...</button></a></p>
+	</div>
+	<div class="six col">
+		<!-- if you have a features page...	<br />
+			<br />
+			<br />
+			<br />
+			<a href="/info/features.php#register"><h1>Why register?</h1> -->
+	</div>
+</div>
 </div>
 {% endblock %}

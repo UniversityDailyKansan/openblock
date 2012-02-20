@@ -4,37 +4,56 @@
 
 
 {% block content %}
+<style type="text/css">
+input { width:100% }
+</style>
 <div id="content">
-	<h1>Log into your account</h1>
-	{% if custom_message %}
-	<p>{{ custom_message }}</p>
-	{% endif %}
-	{% block form_override %}
-	<form action="{{ target|default:'' }}" method="POST">
-	{% endblock form_override %}
-		{% csrf_token %}
-		{{ form.non_field_errors }}
-		{% block next_override %}
-		<input type="hidden" name="next" value="{{ next|default:'' }}" />
-		{% endblock next_override %}
-
-		<table>
-			<tr>
-				<th><label for="id_email">E-mail address:</label></th>
-				<td>{{ form.email.errors }}{{ form.email }}</td>
-			</tr>
-			<tr>
-				<th><label for="id_password">Password:</label></th>
-				<td>{{ form.password.errors }}{{ form.password }} <span><a href="{% url accounts-pw-change %}">Forgot password</a></span></td>
-			</tr>
-			<tr>
-				<th>&nbsp;</th>
-				<td>
-					<button type="submit">Log in</button>
-				</td>
-			</tr>
-		</table>
-	</form>
-	<p><a href="{% url accounts-register %}">Create account</a></p>
+	<div class="row">
+		<div class="six col">
+			<h1>Log into your account</h1>
+				{% if custom_message %}
+					<p>{{ custom_message }}</p>
+				{% endif %}
+		</div>
+		<div class="three col">
+			<a href="/accounts/register/"><span class="nice small round red button" style="color: #fff; margin-top:5px; font-size:20px;">Create account</span></a>
+		</div>
+		<div class="three col">
+			<a href="/accounts/password-change/"><span class="nice small round red button" style="color: #fff; margin-top:5px; font-size:20px;">Forgot password?</span></a>			
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="six col">
+			<form action="/accounts/login/" method="post"> {% csrf_token %} {{ form.non_field_errors }}
+			<div class="row">
+				<div class="four col">
+					<h2>Email</h2>
+				</div>
+				<div class="eight col">
+					{{ form.email.errors }} {{ form.email }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="four col">
+					<h2>Password</h2>
+				</div>
+				<div class="eight col">
+					{{ form.password.errors }} {{ form.password }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="four col offset-by-eight">
+					<button type="submit" style="font-size:20px; width:100%; text-align:center;">Log in</button>
+				</div>
+			</div>
+			</form>
+		</div>
+		<div class="four col">
+			<br />
+			&nbsp;
+			<!-- If a features page is provided, link here <a href="/info/features.php#register"><h1>Why register?</h1> -->
+		</div>
+	</div>
 </div><!--/ #content -->
 {% endblock content %}

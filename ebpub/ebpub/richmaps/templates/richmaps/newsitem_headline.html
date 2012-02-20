@@ -1,12 +1,26 @@
 <li class="item-headline" id="item_headline_{{newsitem.id}}">
   {% if schema.map_icon_url %}
-  <img src="{{schema.map_icon_url}}" />
+  <div class="news_item_headline_primary">
+		<a href="{{ newsitem.schema.url }}"><img src="{{schema.map_icon_url}}" /></a>
+		<div class="date">{{ newsitem.item_date|date:"M" }} <span>{{ newsitem.item_date|date:"d" }}</span></div>
+	</div>
   {% endif %}
   <div class="title">
-    {% if newsitem.item_url %}<a href="{{newsitem.item_url}}">{{newsitem.title|truncatewords_html:15}}</a>
+    {% if newsitem.item_url %}
+    <span class="title">
+      <a href="{{newsitem.item_url}}">{{newsitem.title|truncatewords_html:15}}</a>
     {% else %}{{ newsitem.title }}{% endif %}
+    </span>
   </div>
+  <span class="description">
+			
+			{% if newsitem.schema.slug == "photos" %}
+				<a class="photo" href="{{ newsitem.item_url }}" rel="nofollow"><img width="50" height="50" class="thumbnail" src="{{ newsitem.attributes.photo_href }}" alt="{{ newsitem.title }} posted by {{ newsitem.attributes.username }} to {{ newsitem.attributes.sourcename }}" title="{{ newsitem.title }} posted by {{ newsitem.attributes.username }} to {{ newsitem.attributes.sourcename }}"></a>
+			{% else %}
+      
+      {{ newsitem.description|truncatewords_html:15 }}
+      
+      {% endif %}
   <div class="location">{{ newsitem.location_name.title }}</div>
-  <div class="date">{{ newsitem.item_date|date:"M j" }}</div>
   <div class="category">{{schema.name}}</div>
 </li>

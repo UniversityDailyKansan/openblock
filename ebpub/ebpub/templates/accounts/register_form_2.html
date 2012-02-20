@@ -10,22 +10,31 @@
 		{% csrf_token %}
 		{{ form.e.errors }}
 		{{ form.e }}{{ form.h }}
-		<table>
-			<tr>
-				<th><label for="id_password1">Password:</label></th>
-				<td>{{ form.password1.errors }}{{ form.password1 }}</td>
-			</tr>
-			<tr>
-				<th><label for="id_password2">Password (again):</label></th>
-				<td>{{ form.password2.errors }}{{ form.password2 }}</td>
-			</tr>
-			<tr>
-				<th>&nbsp;</th>
-				<td>
-					<button type="submit">Create your account</button>
-				</td>
-			</tr>
-		</table>
+					<div class="row">
+						<div class="four col">
+							<h2>Password</h2>
+						</div>
+						<div class="eight col">
+							{{ form.password1.errors }}{{ form.password1 }}
+						</div>
+					</div>
+					<div class="row">
+						<div class="four col">
+							<h2>Password (again)</h2>
+						</div>
+						<div class="eight col">
+							{{ form.password2.errors }}{{ form.password2 }}
+						</div>
+					</div>
+				<div class="row">
+					<div class="eight col offset-by-four">
+						<a href="/info/policies.php">By creating an account, you accept our terms and policies.</a>
+						<button type="submit" style="font-size:20px; width:100%; text-align:center;">Welcome to LarryvilleKU</button>
+					</div>
+				</div>
 	</form>
+</div>
+		<div class="six col"> &nbsp; </div>
+	</div>
 </div>
 {% endblock %}

@@ -4,8 +4,19 @@
 {% block fulltitle %}Map of {% METRO_NAME %}{% endblock %}
 
 {% block content %}
-    <div id="map_headlines" class="map-headlines"></div>
-		<div id="mapwrapper" class="fullpage">
+<style type="text/css">
+h2 { float:left; }
+</style>
+	<div class="row">
+				<div class="six col">
+					<h2 class="gray">Filter your sources by <span class="green">clicking the plus sign</span> on the right</h2>
+				</div>
+				<div class="six col">
+					<h2 class="gray show-on-phones">Use the <span class="green">plus and minus buttons</span> on the left to zoom instead of pinching the map. It's ticklish.</h2>
+				</div>
+	</div>
+<div class="row">
+		<div id="mapwrapper" class="fullpage eight col" style="border:none">
 		  <script type="text/javascript">
 	    {% autoescape off %}
       function loadMap() {
@@ -29,14 +40,19 @@
 		  </script>
 		{% include "richmaps/richmap.html" %}
 		</div><!-- end mapwrapper -->
+		<div class="row">
     <div id="map_date_range">
-        <form action="#" id="map_date_range_form">
-        		<label for="map_begin_date">Start Date</label>
-        		<input type="text" class="begin-date" id="map_begin_date" />
-        		<label for="map_end_date">End Date</label>
-    		    <input type="text" class="end-date" id="map_end_date" />
-    		    <input type="submit" value="change" />
+        <form action="#" id="map_date_range_form" class="nice">
+        	<div class="six col">
+        		Start Date: <input type="text" class="begin-date" id="map_begin_date" style="width:125px"/>
+        	</div>
+        	<div class="six col">
+			<input type="text" class="end-date" id="map_end_date" style="width:125px"/>
+    		    <button type="submit" value="change" style="display:inline">Change</button>
+    		   </div>
   		  </form>
+  		 </div>
+  		</div>
     </div>
-
+    <div id="map_headlines" class="map-headlines four col"></div>
 {% endblock %}
